@@ -1,4 +1,3 @@
-const model = require('mongoose')
 var { User, CreatUser } = require('../models/UserModel')
 
 var postLogin = async (req, res) => {
@@ -21,21 +20,27 @@ var resgiste = async (req, res) => {
   var _username = req.body.username
   var _password = req.body.password
   var _passwordConfirmation = req.body.passwordConfirmation
-  UserModel.findOne({
+  User.findOne({
     username: _username,
     email: _email,
   })
     .then(async (data) => {
-      if (data != null) {
-        await ceat(email, username, password, passwordConfirmation)
+      if (data === null) {
+        await newUser(_email, _username, _password, _passwordConfirmation)
+        return res.status(400).json({
+          message: 'Create User successfully',
+        })
+      } else {
+        return res.status(400).json({
+          message: 'email and password are required',
+        })
       }
     })
     .catch((err) => {
       res.status(err.status).json(err.message).end()
     })
 }
-
-var ceat = function newUser(email, username, password, passwordConfirmation) {
+ function newUser(email, username, password, passwordConfirmation) {
   var creatUser = new CreatUser({
     email: email,
     username: username,
