@@ -6,5 +6,5 @@ const loginMiddleware = require('../middlwe/midllweLogin')
 
 router.post('/login',loginMiddleware.postLogin,loginControler);
 router.post('/register',loginMiddleware.postLogin,resgisterControler);
-
+router.get("/",loginMiddleware.verytoken,resgisterControler)
 module.exports = router

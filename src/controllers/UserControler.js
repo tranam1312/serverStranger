@@ -1,5 +1,6 @@
 var { User, CreatUser } = require('../models/UserModel')
-
+var jwt = require('jsonwebtoken')
+const secretKey = 'my_secret_key';
 var postLogin = async (req, res) => {
   var _username = req.body.username
   var _password = req.body.password
@@ -8,10 +9,20 @@ var postLogin = async (req, res) => {
     password: _password,
   })
     .then((data) => {
-      res.status(200).json(data).end()
+       jwt.sign({username : _username, password : _password}, secretKey, { expiresIn: '1h' },function(err, token){
+        if (err) {
+          res.status(400).json(err.message).end()
+        } else {
+          res.status(400).json({
+            idToken: token
+          }).end()
+        }
+      })
+    
+     
     })
     .catch((err) => {
-      res.status(err.status).json(err.message).end()
+      res.status(400).json(err.message).end()
     })
 }
 
@@ -27,7 +38,7 @@ var resgiste = async (req, res) => {
     .then(async (data) => {
       if (data === null) {
         await newUser(_email, _username, _password, _passwordConfirmation)
-        return res.status(400).json({
+        return res.status(200).json({
           message: 'Create User successfully',
         })
       } else {
